@@ -12,10 +12,12 @@ import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
+import com.megacrit.cardcrawl.monsters.beyond.Exploder;
 import com.megacrit.cardcrawl.monsters.ending.SpireShield;
 import com.megacrit.cardcrawl.monsters.ending.SpireSpear;
 import com.megacrit.cardcrawl.powers.AbstractPower;
 import com.megacrit.cardcrawl.powers.BlurPower;
+import com.megacrit.cardcrawl.powers.ExplosivePower;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import me.antileaf.alice.action.doll.*;
 import me.antileaf.alice.action.utils.AnonymousAction;
@@ -27,6 +29,8 @@ import me.antileaf.alice.doll.dolls.EmptyDollSlot;
 import me.antileaf.alice.doll.dolls.FranceDoll;
 import me.antileaf.alice.doll.dolls.NetherlandsDoll;
 import me.antileaf.alice.doll.interfaces.OnDollOperateHook;
+import me.antileaf.alice.monsters.medicine.MedicineCardItem;
+import me.antileaf.alice.monsters.medicine.MedicineMelancholy;
 import me.antileaf.alice.patches.enums.CardTargetEnum;
 import me.antileaf.alice.powers.unique.TauntedPower;
 import me.antileaf.alice.utils.AliceHelper;
@@ -231,6 +235,11 @@ public class DollManager {
 		}
 	}
 	
+	private boolean willBeBroken(AbstractDoll doll, int incomingDamage) {
+		return (doll.HP + doll.block <= incomingDamage) ||
+				(MedicineHelper.isDelirium() && doll.poison >= doll.HP);
+	}
+	
 	public void updateDamageAboutToTake() {
 		if (this.dolls == null || this.dolls.isEmpty())
 			return;
@@ -245,15 +254,14 @@ public class DollManager {
 		for (AbstractDoll doll : this.dolls) {
 			doll.setDamageAboutToTake(-1, 0);
 			doll.poisonAboutToTake = 0;
+			doll.overflowedPoison = 0;
 			doll.setTaunt(false);
 		}
 
 		this.damageTarget.clear();
 
 		for (AbstractMonster m : AbstractDungeon.getMonsters().monsters)
-			if (!m.isDeadOrEscaped()) {
-				// TODO: check for Medicine
-				
+			if (!m.isDeadOrEscaped() && !(m instanceof MedicineMelancholy)) {
 				 for (int i = 1; i <= MAX_DOLL_SLOTS; i++)
 					 if (m.hasPower(TauntedPower.POWER_ID + "_" + i)) {
 						 this.damageTarget.put(m, i - 1);
@@ -268,7 +276,7 @@ public class DollManager {
 		for (int i = 0; i < MAX_DOLL_SLOTS; i++) {
 			AbstractMonster monster = AliceHelper.getMonsterByIndex(i);
 			
-			if (monster == null || this.damageTarget.containsKey(monster))
+			if (monster == null || this.damageTarget.containsKey(monster)) // Taunted
 				continue;
 			
 			int index = i;
@@ -289,38 +297,89 @@ public class DollManager {
 			if (monster == null || monster.isDeadOrEscaped())
 				continue;
 			
-			if (!this.damageTarget.containsKey(monster)) {
+			if (!this.damageTarget.containsKey(monster) && !(monster instanceof MedicineMelancholy)) {
 				logger.warn("Failed to get target index for {}", monster.name);
 				continue;
 			}
 			
-			int index = this.damageTarget.get(monster);
-
-//			AliceHelper.logger.info("monster = " + monster.name + ", index = " + index);
-
-			int damage = -1, count = 0;
-			
-			if (monster.intent == AbstractMonster.Intent.ATTACK ||
-					monster.intent == AbstractMonster.Intent.ATTACK_BUFF ||
-					monster.intent == AbstractMonster.Intent.ATTACK_DEBUFF ||
-					monster.intent == AbstractMonster.Intent.ATTACK_DEFEND) {
-				damage = Math.max(monster.getIntentDmg(), 0);
-				try {
-					count = ReflectionHacks.getPrivate(monster,
-							AbstractMonster.class, "intentMultiAmt");
-					if (count < 1)
+			if (!(monster instanceof MedicineMelancholy)) {
+				int index = this.damageTarget.get(monster);
+				int damage = -1, count = 0;
+				
+				if (monster.intent == AbstractMonster.Intent.ATTACK ||
+						monster.intent == AbstractMonster.Intent.ATTACK_BUFF ||
+						monster.intent == AbstractMonster.Intent.ATTACK_DEBUFF ||
+						monster.intent == AbstractMonster.Intent.ATTACK_DEFEND) {
+					damage = Math.max(monster.getIntentDmg(), 0);
+					try {
+						count = ReflectionHacks.getPrivate(monster,
+								AbstractMonster.class, "intentMultiAmt");
+						if (count < 1)
+							count = 1;
+					} catch (NullPointerException e) {
+						logger.warn("updateDamageAboutToTake() Failed to get intentMultiAmt.");
 						count = 1;
+					}
 				}
-				catch (NullPointerException e) {
-					logger.warn("updateDamageAboutToTake() Failed to get intentMultiAmt.");
+				else if (monster instanceof Exploder &&
+						monster.hasPower(ExplosivePower.POWER_ID) &&
+						monster.intent == AbstractMonster.Intent.UNKNOWN) {
+					damage = 30;
 					count = 1;
 				}
+				
+				if (this.dolls.get(index) != null)
+					this.dolls.get(index).addDamageAboutToTake(damage, count);
+				else
+					logger.warn("doll is null");
 			}
-			
-			if (this.dolls.get(index) != null)
-				this.dolls.get(index).addDamageAboutToTake(damage, count);
-			else
-				logger.warn("doll is null");
+			else { // Medicine
+				for (MedicineCardItem item : ((MedicineMelancholy) monster).cardList.getCards()) {
+					if (item.intent.index != -1) {
+						AbstractDoll doll = this.dolls.get(item.intent.index);
+						
+						if (doll == null) {
+							logger.warn("Medicine intent index points to null doll.");
+							continue;
+						}
+						
+						int incoming = 0;
+						if (item.intent.damage > 0) {
+							int damage = item.intent.damage;
+							int multiAmt = item.intent.multiAmt != -1 ? item.intent.multiAmt : 1;
+							
+							doll.addDamageAboutToTake(damage, multiAmt);
+							
+//							if (monster.hasPower(MedicineEnvenomPower.POWER_ID)) {
+//								int envenom = monster.getPower(MedicineEnvenomPower.POWER_ID).amount;
+//
+//								for (int i = 0; i < multiAmt; i++) {
+//									incoming += damage;
+//									doll.addPoisonAboutToTake(envenom, this.willBeBroken(doll, incoming));
+//								}
+//							}
+//							else
+							incoming += damage * multiAmt;
+						}
+						
+						if (item.intent.poison > 0)
+							doll.addPoisonAboutToTake(item.intent.poison, this.willBeBroken(doll, incoming));
+					}
+					
+					if (item.intent.indices != null) { // Only for Bouncing Flasks
+						for (int index : item.intent.indices) {
+							AbstractDoll doll = this.dolls.get(index);
+							
+							if (doll == null) {
+								logger.warn("Medicine intent indices points to null doll.");
+								continue;
+							}
+							
+							doll.addPoisonAboutToTake(item.intent.poison, this.willBeBroken(doll, 0));
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -747,17 +806,16 @@ public class DollManager {
 		this.update();
 	}
 	
+	// Returns if the doll lost HP
 	public boolean dollTakesDamage(AbstractDoll doll, int amount, boolean isHpLoss) {
 		assert this.dolls.contains(doll);
 		
-		doll.takeDamage(amount, isHpLoss);
+		boolean res = doll.takeDamage(amount, isHpLoss);
 
-		if (doll.HP <= 0) {
+		if (doll.HP <= 0)
 			this.destroyDoll(doll);
-			return true;
-		}
 		
-		return false;
+		return res;
 	}
 	
 	public void applyPoison(AbstractDoll doll, int amount) {

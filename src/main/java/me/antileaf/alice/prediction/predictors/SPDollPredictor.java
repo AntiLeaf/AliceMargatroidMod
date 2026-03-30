@@ -57,7 +57,7 @@ public class SPDollPredictor extends AbstractPredictor {
 			ArrayList<Integer> indices = new ArrayList<>();
 			for (int i = 0; i < DollManager.get().getDolls().size(); i++) {
 				if (DollManager.get().getDolls().get(i) instanceof EmptyDollSlot)
-					indices.add(i);
+					indices.add(7 - i);
 			}
 
 			if (indices.isEmpty())

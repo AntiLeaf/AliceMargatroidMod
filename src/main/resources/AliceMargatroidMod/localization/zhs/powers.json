@@ -301,7 +301,7 @@
   "AliceMargatroid:MedicineDeliriumPower": {
     "NAME": "猛毒",
     "DESCRIPTIONS": [
-      "#y格挡 无法再抵消 #y中毒 伤害。"
+      "每回合开始时，额外获得 #b%d [G] 。 NL #y格挡 无法再抵消 #g中毒 伤害。"
     ]
   },
 
@@ -312,7 +312,7 @@
     ]
   },
 
-  "AliceMargatroid:MedicineInfiniteBladePower": {
+  "AliceMargatroid:MedicineInfiniteBladesPower": {
     "NAME": "无限刀刃",
     "DESCRIPTIONS": [
       "每回合额外打出 #b%d 张 #y小刀 。"
@@ -326,6 +326,13 @@
     ]
   },
 
+  "AliceMargatroid:MedicinePhantasmalKillerPower": {
+    "NAME": "幻影",
+    "DESCRIPTIONS": [
+      "下回合造成 #y双倍伤害 。"
+    ]
+  },
+
   "AliceMargatroid:MedicineOutmaneuverPower": {
     "NAME": "能量提升",
     "DESCRIPTIONS": [
@@ -333,10 +340,41 @@
     ]
   },
 
+  "AliceMargatroid:MedicineExtraDrawPower": {
+    "NAME": "抽牌",
+    "DESCRIPTIONS": [
+      "下回合抽 #b%d 张牌。"
+    ]
+  },
+
+  "AliceMargatroid:SpellCardRulesPower": {
+    "NAME": "符卡规则",
+    "DESCRIPTIONS": [
+      "梅蒂欣还有 #b%d 个残机。",
+      "梅蒂欣已经没有残机了。",
+      " NL 每次击败梅蒂欣后，清除我方的 #y中毒 和 #y尸爆术 状态。"
+    ]
+  },
+
+  "AliceMargatroid:SpellCardRulesPowerPlayer": {
+    "NAME": "符卡规则",
+    "DESCRIPTIONS": [
+      "如果你输掉这场战斗，本局游戏也不会结束。 NL 战斗结束后，你会恢复至战斗开始前的状态。"
+    ]
+  },
+
   "AliceMargatroid:MedicinePoisonPower": {
     "NAME": "中毒",
     "DESCRIPTIONS": [
       "回合结束时，受到 #b%d 点伤害，然后将 #y中毒 层数减少 #b1 。"
+    ]
+  },
+
+  "AliceMargatroid:MedicineCorpseExplosionPowerForDolls": {
+    "NAME": "尸爆术",
+    "DESCRIPTIONS": [
+      "该 人偶 死亡时，爱丽丝受到等于其最大生命值的伤害。",
+      "该 人偶 死亡时，爱丽丝受到等于其最大生命值 #b%d 倍的伤害。"
     ]
   }
 }

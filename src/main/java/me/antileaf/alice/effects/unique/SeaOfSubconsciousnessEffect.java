@@ -7,14 +7,17 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
 import me.antileaf.alice.doll.AbstractDoll;
 import me.antileaf.alice.doll.DollManager;
-import me.antileaf.alice.utils.AliceHelper;
 import me.antileaf.alice.utils.AliceImageMaster;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 // colorFunction takes [0, 1] and returns a color
 public class SeaOfSubconsciousnessEffect extends AbstractGameEffect {
+	private static final Logger logger = LogManager.getLogger(SeaOfSubconsciousnessEffect.class);
+	
 	public static Map<Integer, SeaOfSubconsciousnessEffect> instances = new HashMap<>();
 	
 	public static final float FADE_DUR = 0.25F;
@@ -23,14 +26,11 @@ public class SeaOfSubconsciousnessEffect extends AbstractGameEffect {
 	int slot;
 	public boolean hovered;
 	float duration;
-//	float transparency;
 	
 	public SeaOfSubconsciousnessEffect(int slot) {
 		this.duration = this.startingDuration = FADE_DUR;
 		this.hovered = false;
 		this.slot = slot;
-		
-//		this.rotation = 40 * (slot - 3); // 0 on the right
 		
 		this.scale = 0.5F / 1.28F * Settings.scale;
 		this.color = Color.WHITE.cpy();
@@ -53,7 +53,7 @@ public class SeaOfSubconsciousnessEffect extends AbstractGameEffect {
 		
 		if (this.duration < 0.0F) {
 			this.isDone = true;
-			AliceHelper.log("SeaOfSubconsciousnessEffect: done, slot = " + this.slot);
+			logger.debug("SeaOfSubconsciousnessEffect: done, slot = {}", this.slot);
 			instances.remove(this.slot);
 		}
 	}

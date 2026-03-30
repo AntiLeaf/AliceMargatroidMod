@@ -13,5 +13,14 @@
     "TEXT": [
       "Some interesting things may happen if you input a famous code in Alice's character selection screen."
     ]
+  },
+
+  "AliceMargatroid:MedicineTutorial": {
+    "TEXT": [
+      "Spell Card Rule: NL At the start of this combat, Alice's initial HP will be set to a fixed value. NL At the end of combat, all status will be reset to that they were before this combat, including HP, gold, relics, potions and cards. NL NL Therefore, even if you fail, the game will not end. NL Regardless of victory or failure, you can get #greward .",
+      "Under the Spell Card Rule, Medicine will also fight by playing cards. NL NL Unlike other monsters, Medicine's single-target cards will randomly select a #yDoll #ySlot as its target. NL Hover your mouse over the Medicine's card to see its target.  NL NL If there is doll in the slot, it will suffer #gPoison or #yCorpse #yExplosion ; if there is no doll, or the doll has already been destroyed, the effect will be applied to Alice. NL #yCrippling #yCloud and #yNoxious #yFumes NL ignore this rule, each time triggered or played, NL Alice and all dolls will be applied with #gPoison .",
+      "Some cards of Medicine can apply #gPoison and #yCorpse #yExplosion to Alice and #ydolls. NL Unlike the #gPoison that you apply to enemies, the #gPoison on you will be triggered at the end of your turn, and its damage can be #bblocked . NL Moreover, #yCorpse #yExplore on dolls will only deal damage to Alice. NL Each time Medicine is defeated, all #gPoison and #yCorpse #yExplore on Alice and dolls NL will be removed.",
+      "The tutorial ends here. If you want to watch it again, you can reopen it in the setting, or #yRight-Click your initial relic in the Medicine combat. NL NL (PID:86902963)"
+    ]
   }
 }

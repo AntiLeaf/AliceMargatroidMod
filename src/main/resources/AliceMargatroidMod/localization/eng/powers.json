@@ -166,5 +166,101 @@
       "The damage of this creature is lowered by  #b",
       " this turn."
     ]
+  },
+
+  "AliceMargatroid:MedicineAfterImagePower": {
+    "NAME": "After Image",
+    "DESCRIPTIONS": [
+      "Whenever it play a card, gain #b%d Block."
+    ]
+  },
+
+  "AliceMargatroid:MedicineCorpseExplosionPower": {
+    "NAME": "Corpse Explosion",
+    "DESCRIPTIONS": [
+      "WWW",
+      "WWW",
+      "WWW"
+    ]
+  },
+
+  "AliceMargatroid:MedicineDeliriumPower": {
+    "NAME": "Delirium",
+    "DESCRIPTIONS": [
+      "Gain #b%d [G] at the start of its turn. NL #yBlock can no longer prevent #gPoison damage."
+    ]
+  },
+
+  "AliceMargatroid:MedicineEnvenomPower": {
+    "NAME": "Envenom",
+    "DESCRIPTIONS": [
+      "Whenever it deals unblocked attack damage, apply #b%d #yPoison."
+    ]
+  },
+
+  "AliceMargatroid:MedicineInfiniteBladesPower": {
+    "NAME": "Infinite Blades",
+    "DESCRIPTIONS": [
+      "Play extra #b%d #yShiv(s) each turn."
+    ]
+  },
+
+  "AliceMargatroid:MedicineNoxiousFumesPower": {
+    "NAME": "Noxious Fumes",
+    "DESCRIPTIONS": [
+      "At the end of its turn, apply #b%d #yPoison to ALL enemies."
+    ]
+  },
+
+  "AliceMargatroid:MedicinePhantasmalKillerPower": {
+    "NAME": "Phantasmal",
+    "DESCRIPTIONS": [
+      "Deal #yDouble #yDamage next turn."
+    ]
+  },
+
+  "AliceMargatroid:MedicineOutmaneuverPower": {
+    "NAME": "Energized",
+    "DESCRIPTIONS": [
+      "Gain #b%d additional [G] next turn."
+    ]
+  },
+
+  "AliceMargatroid:MedicineExtraDrawPower": {
+    "NAME": "Extra Cards",
+    "DESCRIPTIONS": [
+      "Draw #b%d additional card(s) next turn."
+    ]
+  },
+
+  "AliceMargatroid:SpellCardRulesPower": {
+    "NAME": "Spell Card Rule",
+    "DESCRIPTIONS": [
+      "Medicine has #b%d extra lives remaining.",
+      "Medicine has no extra lives remaining.",
+      " NL Each time Medicine is defeated, remove all #yPoison and #yCorpse #yExplosion from Alice and all #yDolls ."
+    ]
+  },
+
+  "AliceMargatroid:SpellCardRulesPowerPlayer": {
+    "NAME": "Spell Card Rule",
+    "DESCRIPTIONS": [
+      "If you lose this combat, the game will not end. NL At the end of combat, you will be restored to the state before this combat."
+    ]
+  },
+
+  "AliceMargatroid:MedicinePoisonPower": {
+    "NAME": "Poison",
+    "DESCRIPTIONS": [
+      "At the end of your turn, take #b%d damage, then reduce #yPoison by 1."
+    ]
+  },
+
+  "AliceMargatroid:MedicineCorpseExplosionPowerForDolls": {
+    "NAME": "Corpse Explosion",
+    "DESCRIPTIONS": [
+      "When this #yDoll is destroyed, Alice takes damage equal to its max HP.",
+      "When this #yDoll is destroyed, Alice takes damage equal to #b%d times its max HP."
+    ]
   }
 }

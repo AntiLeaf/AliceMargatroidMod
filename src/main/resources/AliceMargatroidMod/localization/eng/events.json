@@ -25,6 +25,29 @@
     ]
   },
 
+  "AliceMargatroid:LittleSweetPoison": {
+    "NAME": "Little Sweet Poison",
+    "DESCRIPTIONS": [
+      "Inside the spire, it feels like the Former Hell -— #rdull and ~fragmented~ . You have long ceased to care whether what you see is illusion or reality. NL After turning a corner, a mirage of #blily #bof #bthe valley unfolds before your eyes, pulling your thoughts from the Hell back to the present. NL In the middle of the flower field, you see a hint of #yblonde ... the same #yblonde as yours. NL NL Medicine. A #ydoll formed from #ppoison, a youkai formed from that #ydoll. NL You know her. Even if you don't know her, your meeting is unlikely to be ~calm~ .",
+      "She also looks at you, her brows shifting from raised to tightly furrowed. NL \"Ah...you're a #ypuppeteer , huh?\" NL NL Should you make your #ydoll shake its head? NL NL \"It's because of people like you that I ended up becoming this kind of youkai!\" NL Medicine exudes an aura that makes her #rbow and #rskirt ~flutter~ as she walks toward you, step by step. NL If you keep silent, a #b~Gensokyo-style~ greeting seems unavoidable.",
+      "Medicine #ris #rnot #rgentle #rin #rher #raction , and you don't want to go all out. After a few clashes, you ~withdraw~ all your dolls, putting an end to this pointless fight. NL You tell her that not all puppeteers are as irresponsible as those who abandon their dolls, and that you were ~deliberately~ avoiding hurting your puppets, which is why you didn't go all out. NL NL \"Is that so? Since you're so #y~weak~ without your dolls, I don't have to worry about you abandoning them.\" NL NL She left on her own, and you don't know whether she was being #b~ignorant~ or #p@mocking@ you. NL Fortunately, you didn't use any #rsuicide-style dolls, otherwise that excuse wouldn't have held up.",
+      "\"How strong is she...?\" Medicine staggers and slumps to the ground. You says nothing, just ~gently~ helping her up. NL You tell her that not all puppeteers are as irresponsible as those who abandon their dolls, under your skilled manipulation, the dolls are #ytacit, #gloyal and #rstrong, which is the best proof. NL NL \"I see... If it's someone as strong as you, then you can surely take care of her better than I can.\" Medicine entrusts her friend \" #ySu-san \" to you. NL \"Take her with you to defeat #pevil humans and #yemancipate dolls like me, okay?\" NL NL Actually, you never intend to keep that promise. NL From that perspective, isn't that no different from the people who abandoned her?",
+      "You tell her that not all puppeteers are as irresponsible as those who abandon their dolls, and then show her your #bclean and #y~lively~ dolls, which have received the best care and love. NL In her #bignorance, she seems to believe it easily. NL NL \"In that case, do you want to come with me from now on to defeat those #pevil humans?\" NL You simply agreed, then bid farewell to her as she left happily. NL NL Actually, you never intend to keep that promise. NL From that perspective, isn't that no different from the people who abandoned her?",
+      "Meeting Medicine was like a dreamwalk through a #bwonderland . NL Now, you return to the ~winding~ corridors of the spire.",
+      "Su-san",
+      "Ruby Key",
+      "Emerald Key",
+      "Sapphire Key"
+    ],
+    "OPTIONS": [
+      "[Approach]",
+      "[Fight] #rA #rpowerful #rfight. #gNo #gpunishment if you fail.",
+      "[Cheat] #gSkip combat. Can also gain #greward.",
+      "[Continue]",
+      "[Leave]"
+    ]
+  },
+
   "AliceMargatroid:PuppeteersHouse": {
     "NAME": "Puppeteers Mansion",
     "DESCRIPTIONS": [

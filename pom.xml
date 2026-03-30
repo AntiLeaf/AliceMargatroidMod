@@ -6,7 +6,7 @@
 
   <groupId>me.antileaf</groupId>
   <artifactId>AliceMargatroid</artifactId>
-  <version>1.1.20</version>
+  <version>1.2.0</version>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -16,7 +16,7 @@
     <ModTheSpire.version>3.30.0</ModTheSpire.version>
     <basemod.version>5.22.0</basemod.version>
     <stslib.version>2.10.1</stslib.version>
-      <Steam.path>C:/Program Files (x86)/steam/steamapps</Steam.path>
+    <Steam.path>D:/steam/steamapps</Steam.path>
     <Spire.path>${Steam.path}/common/SlayTheSpire</Spire.path>
   </properties>
 
@@ -84,6 +84,14 @@
 <!--      <scope>system</scope>-->
 <!--      <systemPath>${Steam.path}/workshop/content/646570/2599715637/PatchouliMod.jar</systemPath>-->
 <!--    </dependency>-->
+
+	  <dependency>
+		  <groupId>gensokyo</groupId>
+		  <artifactId>Gensokyo</artifactId>
+		  <version>newest</version>
+		  <scope>system</scope>
+		  <systemPath>${Steam.path}/workshop/content/646570/1943540698/Gensokyo.jar</systemPath>
+	  </dependency>
 
     <dependency>
         <groupId>org.jetbrains</groupId>

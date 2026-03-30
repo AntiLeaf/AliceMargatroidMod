@@ -9,6 +9,7 @@ import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import me.antileaf.alice.action.doll.SpawnDollAction;
 import me.antileaf.alice.doll.dolls.ShanghaiDoll;
+import me.antileaf.alice.events.medicine.LittleSweetPoison;
 import me.antileaf.alice.utils.AliceHelper;
 import me.antileaf.alice.utils.AliceTutorialHelper;
 
@@ -57,8 +58,13 @@ public class AlicesGrimoire extends CustomRelic implements ClickableRelic {
 	
 	@Override
 	public void onRightClick() {
-		if (AliceHelper.isInBattle() && !AbstractDungeon.actionManager.turnHasEnded)
-			AliceTutorialHelper.openTutorial();
+		if (AliceHelper.isInBattle() && !AbstractDungeon.actionManager.turnHasEnded) {
+			if (AbstractDungeon.getCurrRoom() != null &&
+					AbstractDungeon.getCurrRoom().event instanceof LittleSweetPoison)
+				AliceTutorialHelper.openMedicineTutorial();
+			else
+				AliceTutorialHelper.openTutorial();
+		}
 	}
 	
 	@Override

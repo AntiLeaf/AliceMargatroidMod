@@ -261,6 +261,17 @@ public abstract class AliceHelper {
 		// TODO: May need to add some checks here to work with other mods
 	}
 	
+	public static AbstractCard upgraded(AbstractCard card) {
+		card.upgrade();
+		return card;
+	}
+	
+	public static AbstractCard upgraded(AbstractCard card, int times) {
+		for (int i = 0; i < times; i++)
+			card.upgrade();
+		return card;
+	}
+	
 	public static String coloredNumber(int amount, int baseAmount) {
 		if (amount != baseAmount)
 			return FontHelper.colorString("" + amount,

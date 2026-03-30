@@ -28,18 +28,20 @@ public class DollApplyCorpseExplosionAction extends AbstractGameAction {
 	
 	@Override
 	public void update() {
-		if (this.doll != null) {
-			if (!DollManager.get().contains(this.doll)) {
-				logger.warn("DollManager does not contain {}!", this.doll.name);
-				this.isDone = true;
-				return;
+		if (this.duration == this.startDuration) {
+			if (this.doll != null) {
+				if (!DollManager.get().contains(this.doll)) {
+					logger.warn("DollManager does not contain {}!", this.doll.name);
+					this.isDone = true;
+					return;
+				}
+				
+				DollManager.get().applyCorpseExplosion(this.doll, this.amount);
 			}
-			
-			DollManager.get().applyCorpseExplosion(this.doll, this.amount);
-			
-			this.tickDuration();
+			else
+				this.isDone = true;
 		}
-		else
-			this.isDone = true;
+		
+		this.tickDuration();
 	}
 }

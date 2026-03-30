@@ -1,17 +1,12 @@
 package me.antileaf.alice.cards.medicine;
 
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
-import com.megacrit.cardcrawl.cards.green.CripplingPoison;
 import com.megacrit.cardcrawl.cards.green.Envenom;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.CardStrings;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import com.megacrit.cardcrawl.powers.EnvenomPower;
-import com.megacrit.cardcrawl.powers.PoisonPower;
-import com.megacrit.cardcrawl.powers.VulnerablePower;
-import com.megacrit.cardcrawl.powers.WeakPower;
 import me.antileaf.alice.utils.AliceHelper;
 
 public class MedicineEnvenom extends Envenom {
@@ -41,8 +36,10 @@ public class MedicineEnvenom extends Envenom {
 	
 	@Override
 	public void upgrade() {
-		if (!this.upgraded)
+		if (!this.upgraded) {
+			this.upgradedCount++;
 			super.upgrade();
+		}
 		else if (this.upgradedCount < 2) {
 			this.upgradedCount++;
 			this.upgradeName();

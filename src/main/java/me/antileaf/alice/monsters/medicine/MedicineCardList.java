@@ -6,12 +6,14 @@ import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.relics.RunicDome;
-import me.antileaf.alice.action.medicine.MedicinePlayCardAction;
 import me.antileaf.alice.action.medicine.MedicineCardFadeOutAction;
-import me.antileaf.alice.action.utils.AnonymousAction;
+import me.antileaf.alice.action.medicine.MedicinePlayCardAction;
+import me.antileaf.alice.effects.medicine.MedicineTargetArrowEffect;
+import me.antileaf.alice.strings.AliceLanguageStrings;
 import me.antileaf.alice.utils.AliceHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MedicineCardList {
 	private MedicineCardItem hovered = null;
@@ -31,6 +33,21 @@ public class MedicineCardList {
 		this.scale = 1.0F;
 		
 		this.cards = new ArrayList<>();
+	}
+	
+	public String getNames() {
+		return String.join(" " + AliceLanguageStrings.CAESURA + " ",
+				this.cards.stream()
+						.map(item ->
+								Arrays.stream(item.card.name.split(" "))
+										.map(s -> "#y" + s)
+										.reduce((s1, s2) -> s1 + " " + s2)
+										.orElse(""))
+						.toArray(String[]::new));
+	}
+	
+	public ArrayList<MedicineCardItem> getCards() {
+		return this.cards;
 	}
 	
 	public void applyPowers(MedicineMelancholy medicine) {
@@ -56,10 +73,14 @@ public class MedicineCardList {
 	
 	public void update(float x, float y) {
 		if (!AbstractDungeon.isScreenUp) {
-			this.scale = Settings.scale * (!this.cards.isEmpty() ?
-					Math.min(1.5F, 5.0F / this.cards.size()) : 1.5F);
+			this.scale = Settings.scale * 1.5F; // (!this.cards.isEmpty() ?
+//					Math.max(1.5F, 5.0F / this.cards.size()) : 1.5F);
 			this.drawStartX = x - this.cards.size() * 36.0F * this.scale;
 			this.drawEndX = x + this.cards.size() * 36.0F * this.scale;
+			if (this.drawEndX + 36.0F * this.scale > Settings.WIDTH) {
+				this.drawStartX -= (this.drawEndX + 36.0F * this.scale - Settings.WIDTH);
+				this.drawEndX = Settings.WIDTH - 36.0F * this.scale;
+			}
 			this.drawStartY = y;
 			this.padX = this.cards.size() > 1 ?
 					(this.drawEndX - this.drawStartX) / (this.cards.size() - 1) : 72.0F * this.scale;
@@ -73,6 +94,12 @@ public class MedicineCardList {
 				if (item.card.hb.hovered)
 					newHovered = item;
 			}
+			
+			for (MedicineTargetArrowEffect effect : MedicineTargetArrowEffect.instances.values())
+				effect.hovered = false;
+			
+			if (this.hovered != null)
+				this.hovered.updateTargetArrow();
 			
 			this.hovered = newHovered;
 			
@@ -122,6 +149,15 @@ public class MedicineCardList {
 		card.targetTransparency = 1.0F;
 		this.cards.add(new MedicineCardItem(card));
 	}
+	
+//	public void addToFront(AbstractCard card) {
+//		card.drawScale = this.scale;
+//		card.current_x = (this.drawStartX + this.padX * this.cards.size());
+//		card.current_y = this.drawStartY;
+//		card.transparency = 0.0F;
+//		card.targetTransparency = 1.0F;
+//		this.cards.add(0, new MedicineCardItem(card));
+//	}
 	
 	public void playAll(MedicineMelancholy medicine) {
 		for (MedicineCardItem item : this.cards)

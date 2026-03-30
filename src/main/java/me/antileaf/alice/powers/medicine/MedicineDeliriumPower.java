@@ -12,19 +12,19 @@ public class MedicineDeliriumPower extends AbstractAlicePower {
 	public static final String POWER_ID = AliceHelper.makeID(SIMPLE_NAME);
 	private static final PowerStrings powerStrings = CardCrawlGame.languagePack.getPowerStrings(POWER_ID);
 	
-	public MedicineDeliriumPower(AbstractCreature owner) {
+	public MedicineDeliriumPower(AbstractCreature owner, int amount) {
 		this.name = powerStrings.NAME;
 		this.ID = POWER_ID;
 		this.owner = owner;
-		this.amount = -1;
+		this.amount = amount;
 		
 		this.updateDescription();
-		this.initializeImage(POWER_ID);
+		this.initializeImage(SIMPLE_NAME);
 		this.type = NeutralPowertypePatch.NEUTRAL;
 	}
 	
 	@Override
 	public void updateDescription() {
-		this.description = powerStrings.DESCRIPTIONS[0];
+		this.description = String.format(powerStrings.DESCRIPTIONS[0], this.amount);
 	}
 }

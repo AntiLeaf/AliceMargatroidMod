@@ -3,5 +3,31 @@
     "NAME": "Shanghai Doll",
     "DIALOG": ["……!", "……?"],
     "MOVES": ["Crescent", "Border", "Danmaku", "Afraid"]
+  },
+
+  "AliceMargatroid:MedicineMelancholy": {
+    "NAME": "Medicine Melancholy",
+    "DIALOG": [
+      "qwq",
+      "pwp",
+      "ahaha"
+    ],
+    "MOVES": [
+      "Intent",
+      "Medicine Melancholy is going to play: %s .",
+      "Fog Sign \"Gassing Garden\"",
+      "Poison Cloud",
+      "Poison Bee",
+      "Charge",
+      "Poison Sign \"Poison Breath\"",
+      "Poison Bee",
+      "Poison Sign \"Nerve Poison\"",
+      "Charge",
+      "Confusion \"Into Delirium\"",
+      "Poison Sign \"Nerve Poison\"",
+      "Poisonous Sweet",
+      "Poison Bee",
+      "Poison Sign \"A Poison for Melancholy\""
+    ]
   }
 }

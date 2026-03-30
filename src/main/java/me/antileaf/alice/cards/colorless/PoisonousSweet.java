@@ -1,5 +1,6 @@
 package me.antileaf.alice.cards.colorless;
 
+import basemod.AutoAdd;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.actions.common.SetDontTriggerAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
@@ -13,6 +14,7 @@ import com.megacrit.cardcrawl.powers.PoisonPower;
 import me.antileaf.alice.cards.AbstractAliceCard;
 import me.antileaf.alice.utils.AliceHelper;
 
+@AutoAdd.Ignore
 public class PoisonousSweet extends AbstractAliceCard {
 	public static final String SIMPLE_NAME = PoisonousSweet.class.getSimpleName();
 	public static final String ID = AliceHelper.makeID(SIMPLE_NAME);

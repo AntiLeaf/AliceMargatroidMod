@@ -1,5 +1,6 @@
 package me.antileaf.alice.monsters.medicine;
 
+import basemod.ReflectionHacks;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,6 +9,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.actions.common.DamageAction;
+import com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction;
+import com.megacrit.cardcrawl.actions.utility.WaitAction;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.green.*;
 import com.megacrit.cardcrawl.cards.tempCards.Shiv;
@@ -20,14 +23,17 @@ import com.megacrit.cardcrawl.powers.*;
 import com.megacrit.cardcrawl.vfx.AbstractGameEffect;
 import com.megacrit.cardcrawl.vfx.DebuffParticleEffect;
 import com.megacrit.cardcrawl.vfx.combat.BuffParticleEffect;
+import me.antileaf.alice.action.medicine.MedicineApplyCorpseExplosionAction;
 import me.antileaf.alice.action.medicine.MedicineApplyPoisonAction;
 import me.antileaf.alice.action.medicine.MedicineApplyPoisonToAllAction;
 import me.antileaf.alice.action.utils.AnonymousAction;
 import me.antileaf.alice.cards.medicine.MedicineCripplingPoison;
+import me.antileaf.alice.cards.medicine.MedicineDelirium;
 import me.antileaf.alice.cards.medicine.MedicineEnvenom;
 import me.antileaf.alice.doll.AbstractDoll;
 import me.antileaf.alice.doll.DollManager;
 import me.antileaf.alice.doll.dolls.EmptyDollSlot;
+import me.antileaf.alice.effects.medicine.MedicineTargetArrowEffect;
 import me.antileaf.alice.powers.medicine.*;
 import me.antileaf.alice.utils.AliceHelper;
 import me.antileaf.alice.utils.AliceImageMaster;
@@ -35,6 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MedicineCardItem implements Disposable {
 	private static final Logger logger = LogManager.getLogger(MedicineCardItem.class);
@@ -64,12 +71,37 @@ public class MedicineCardItem implements Disposable {
 		
 		if (!this.hidden) {
 			this.card.updateHoverLogic();
+			ReflectionHacks.setPrivate(this.card, AbstractCard.class,
+					"renderTip", false);
 			this.card.targetDrawScale = hovered ? 0.9F : 0.5F;
 		}
 		else
 			this.card.hb.hovered = false;
 		
 		this.updateIntentVFX();
+	}
+	
+	public void updateTargetArrow() {
+		if (this.intent.index != -1) {
+			if (!MedicineTargetArrowEffect.instances.containsKey(this.intent.index)) {
+				MedicineTargetArrowEffect effect = new MedicineTargetArrowEffect(this.intent.index);
+				MedicineTargetArrowEffect.instances.put(this.intent.index, effect);
+				AbstractDungeon.effectList.add(effect);
+			}
+			
+			MedicineTargetArrowEffect.instances.get(this.intent.index).hovered = true;
+		}
+		
+		if (this.intent.indices != null)
+			for (int i : this.intent.indices) {
+				if (!MedicineTargetArrowEffect.instances.containsKey(i)) {
+					MedicineTargetArrowEffect effect = new MedicineTargetArrowEffect(i);
+					MedicineTargetArrowEffect.instances.put(i, effect);
+					AbstractDungeon.effectList.add(effect);
+				}
+				
+				MedicineTargetArrowEffect.instances.get(i).hovered = true;
+			}
 	}
 	
 	private float getIntentY() {
@@ -87,12 +119,12 @@ public class MedicineCardItem implements Disposable {
 				this.intentVfx.add(new BuffParticleEffect(this.card.current_x, y));
 			}
 		}
-		else if (this.intent.debuff || this.intent.strongDebuff || this.intent.poison != -1) {
+		else if (this.intent.debuff || this.intent.poison != -1) {
 			this.intentParticleTimer -= Gdx.graphics.getDeltaTime();
 			if (this.intentParticleTimer < 0.0F) {
 				this.intentParticleTimer = 1.0F;
 				
-				if (this.intent.debuff || this.intent.strongDebuff)
+				if (this.intent.debuff)
 					this.intentVfx.add(new DebuffParticleEffect(this.card.current_x, y));
 				
 				if (this.intent.poison != -1)
@@ -120,7 +152,8 @@ public class MedicineCardItem implements Disposable {
 				
 			this.card.render(sb);
 			
-			if (hovered)
+			if (hovered && (float) ReflectionHacks.getPrivate(this.card,
+					AbstractCard.class, "hoverDuration") > 0.25F)
 				TipHelper.renderTipForCard(this.card, sb, this.card.keywords);
 		}
 	}
@@ -179,7 +212,8 @@ public class MedicineCardItem implements Disposable {
 			if (this.intent.debuff || this.intent.strongDebuff) {
 				y -= 64.0F * Settings.scale;
 				
-				this.draw(sb, ImageMaster.INTENT_DEBUFF_L,
+				this.draw(sb, this.intent. strongDebuff?
+								ImageMaster.INTENT_DEBUFF2_L : ImageMaster.INTENT_DEBUFF_L,
 						this.card.current_x, y, this.intentAngle);
 			}
 			
@@ -208,14 +242,21 @@ public class MedicineCardItem implements Disposable {
 			if (this.intent.poison != -1) {
 				y -= 64.0F * Settings.scale;
 				
+				if (this.intent.aoe) {
+					this.draw(sb, AliceImageMaster.INTENT_POISON,
+							this.card.current_x - 10.0F, y + 15.0F, 0.0F);
+					this.draw(sb, AliceImageMaster.INTENT_POISON,
+							this.card.current_x + 10.0F, y + 15.0F, 0.0F);
+				}
+				
 				this.draw(sb, AliceImageMaster.INTENT_POISON,
 						this.card.current_x, y, 0.0F);
 				
 				String str;
 				if (this.intent.poison >= 0) {
 					str = Integer.toString(this.intent.poison);
-					if (this.intent.poison > 1)
-						str = str + "x" + this.intent.poison;
+					if (this.intent.multiAmt > 1)
+						str = str + "x" + this.intent.multiAmt;
 				}
 				else
 					str = "x" + (-this.intent.poison); // Catalyst
@@ -296,10 +337,11 @@ public class MedicineCardItem implements Disposable {
 				AliceHelper.addActionToBuffer(new MedicineApplyPoisonAction(index, medicine, 3));
 			}
 		}
-		else if (this.card instanceof CorpseExplosion) { // 尸体爆炸
-			AliceHelper.addActionToBuffer(new MedicineApplyPoisonAction(this.intent.index, medicine,
-					this.card.magicNumber));
-			// TODO: corpse explosion
+		else if (this.card instanceof CorpseExplosion) { // 尸爆术
+			AliceHelper.addActionToBuffer(new MedicineApplyPoisonAction(
+					this.intent.index, medicine, this.card.magicNumber));
+			AliceHelper.addActionToBuffer(new MedicineApplyCorpseExplosionAction(
+					this.intent.index, medicine, 1));
 		}
 		else if (this.card instanceof Catalyst) { // 催化剂
 			int maxPoison = 0, index = -1;
@@ -315,17 +357,17 @@ public class MedicineCardItem implements Disposable {
 				AbstractDoll doll = DollManager.get().getDolls().get(index);
 				if (doll.poison > 0) {
 					AliceHelper.addActionToBuffer(new MedicineApplyPoisonAction(index, medicine,
-							doll.poison * this.card.magicNumber));
+							doll.poison * (-this.intent.poison - 1)));
 				}
 			}
 			else if (AbstractDungeon.player.hasPower(MedicinePoisonPower.POWER_ID))
 				AliceHelper.addActionToBuffer(new MedicineApplyPoisonAction(-1, medicine,
 						AbstractDungeon.player.getPower(MedicinePoisonPower.POWER_ID).amount *
-								this.card.magicNumber));
+								(-this.intent.poison - 1)));
 		}
 		else if (this.card instanceof InfiniteBlades) { // 无限刀刃
 			AliceHelper.addActionToBuffer(new ApplyPowerAction(medicine, medicine,
-					new MedicineInfiniteBladesPower(medicine, this.card.magicNumber)));
+					new MedicineInfiniteBladesPower(medicine, 1)));
 		}
 		else if (this.card instanceof Caltrops) { // 铁蒺藜
 			AliceHelper.addActionToBuffer(new ApplyPowerAction(medicine, medicine,
@@ -345,11 +387,26 @@ public class MedicineCardItem implements Disposable {
 		}
 		else if (this.card instanceof AfterImage) { // 余像
 			AliceHelper.addActionToBuffer(new ApplyPowerAction(medicine, medicine,
-					new MedicineAfterImagePower(medicine, this.card.magicNumber)));
+					new MedicineAfterImagePower(medicine, 1)));
 		}
 		else if (this.card instanceof PhantasmalKiller) { // 幻影杀手
 			AliceHelper.addActionToBuffer(new ApplyPowerAction(medicine, medicine,
-					new PhantasmalPower(medicine, 1)));
+					new MedicinePhantasmalKillerPower(medicine, 1)));
+		}
+		else if (this.card instanceof Doppelganger) { // 双重存在
+			AliceHelper.addActionToBuffer(new ApplyPowerAction(medicine, medicine,
+					new MedicineOutmaneuverPower(medicine, 2)));
+			AliceHelper.addActionToBuffer(new ApplyPowerAction(medicine, medicine,
+					new MedicineExtraDrawPower(medicine, 2)));
+		}
+		else if (this.card instanceof MedicineDelirium) { // 猛毒
+			AliceHelper.addActionToBuffer(new RemoveSpecificPowerAction(
+					AbstractDungeon.player, medicine, ArtifactPower.POWER_ID));
+			AliceHelper.addActionToBuffer(new ApplyPowerAction(medicine, medicine,
+					new MedicineDeliriumPower(medicine, this.card.magicNumber)));
+		}
+		else if (this.card instanceof Acrobatics || this.card instanceof Expertise) { // 杂技/独门技术
+			AliceHelper.addActionToBuffer(new WaitAction(0.5F));
 		}
 		else if (this.card instanceof Shiv) { // 小刀
 			AliceHelper.addActionToBuffer(new DamageAction(AbstractDungeon.player,
@@ -373,6 +430,7 @@ public class MedicineCardItem implements Disposable {
 		public boolean buff = false;
 		public boolean debuff = false;
 		public boolean strongDebuff = false;
+		public boolean aoe = false;
 		
 		public CardIntent() {}
 		
@@ -416,6 +474,11 @@ public class MedicineCardItem implements Disposable {
 			return this;
 		}
 		
+		public CardIntent aoe() {
+			this.aoe = true;
+			return this;
+		}
+		
 		public boolean unknown() {
 			return this.damage == -1 && this.poison == -1
 					&& !this.buff && !this.debuff && !this.strongDebuff;
@@ -446,14 +509,36 @@ public class MedicineCardItem implements Disposable {
 			}
 			else if (card instanceof CripplingPoison) {
 				if (card instanceof MedicineCripplingPoison && ((MedicineCripplingPoison) card).upgradedCount >= 2)
-					return new CardIntent().poison(card.magicNumber).strongDebuff();
+					return new CardIntent().poison(card.magicNumber).strongDebuff().aoe();
 				else
-					return new CardIntent().poison(card.magicNumber).debuff();
+					return new CardIntent().poison(card.magicNumber).debuff().aoe();
 			}
 			else if (card instanceof BouncingFlask) {
 				int[] indices = new int[card.magicNumber];
-				for (int i = 0; i < card.magicNumber; i++)
-					indices[i] = AbstractDungeon.monsterRng.random(0, 6);
+				for (int i = 0; i < card.magicNumber; i++) {
+					int tmp = AbstractDungeon.monsterRng.random(0, 6);
+					
+					for (int j = 0; j < DollManager.MAX_DOLL_SLOTS; j++) {
+						boolean already = false;
+						for (int k = 0; k < i; k++) {
+							if (indices[k] == j) {
+								already = true;
+								break;
+							}
+						}
+						
+						if (!already) {
+							if (tmp == 0) {
+								indices[i] = j;
+								break;
+							}
+							
+							tmp--;
+						}
+					}
+				}
+				
+				indices = Arrays.stream(indices).sorted().toArray();
 				
 				return new CardIntent()
 						.poison(3)
@@ -486,6 +571,15 @@ public class MedicineCardItem implements Disposable {
 			}
 			else if (card instanceof PhantasmalKiller) {
 				return new CardIntent().buff();
+			}
+			else if (card instanceof Doppelganger) {
+				return new CardIntent().buff();
+			}
+			else if (card instanceof MedicineDelirium) {
+				return new CardIntent().strongDebuff();
+			}
+			else if (card instanceof Acrobatics || card instanceof Expertise) {
+				return new CardIntent();
 			}
 			else if (card instanceof Shiv) {
 				return new CardIntent()

@@ -47,8 +47,10 @@ public class MedicineCripplingPoison extends CripplingPoison {
 	
 	@Override
 	public void upgrade() {
-		if (!this.upgraded)
+		if (!this.upgraded) {
+			this.upgradedCount++;
 			super.upgrade();
+		}
 		else if (this.upgradedCount < 2) {
 			this.upgradedCount++;
 			this.upgradeName();

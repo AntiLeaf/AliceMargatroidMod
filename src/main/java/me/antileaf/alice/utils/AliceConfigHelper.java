@@ -25,12 +25,14 @@ public class AliceConfigHelper {
 	private static final Logger logger = LogManager.getLogger(AliceConfigHelper.class.getName());
 
 	public static final String SHOULD_OPEN_TUTORIAL = "shouldOpenTutorial";
+	public static final String SHOULD_OPEN_MEDICINE_TUTORIAL = "shouldOpenMedicineTutorial";
 	public static final String ENABLE_SPELL_CARD_SIGN_DISPLAY = "enableSpellCardSignDisplay";
 	public static final String ENABLE_CARD_TARGET_ICONS = "enableCardTargetIcons";
 	public static final String ENABLE_ALTERNATIVE_MARISA_CARD_IMAGE = "enableAlternativeMarisaCardImage";
 	public static final String USE_PACK_MASTER_STYLE_MARISA_CARDS = "usePackMasterStyleMarisaCards";
 	public static final String ENABLE_WITCHS_TEA_PARTY_FEATURE = "enableWitchsTeaPartyFeature"; // Deprecated
 	public static final String ENABLE_SHANGHAI_DOLL_EVENT_FOR_OTHER_CHARACTERS = "enableShanghaiDollEventForOtherCharacters";
+	public static final String ENABLE_MEDICINE_FOR_OTHER_CHARACTERS = "enableMedicineForOtherCharacters";
 	public static final String ENABLE_DEBUGGING = "enableDebugging";
 //	public static final String SKIN_SELECTION_UNLOCKED = "skinSelectionUnlocked";
 	public static final String SKIN_CHOSEN = "skinChosen";
@@ -47,12 +49,14 @@ public class AliceConfigHelper {
 	public static void loadConfig() {
 		Properties defaults = new Properties();
 		defaults.setProperty(SHOULD_OPEN_TUTORIAL, "true");
+		defaults.setProperty(SHOULD_OPEN_MEDICINE_TUTORIAL, "true");
 		defaults.setProperty(ENABLE_SPELL_CARD_SIGN_DISPLAY, "true");
 		defaults.setProperty(ENABLE_CARD_TARGET_ICONS, "true");
 		defaults.setProperty(ENABLE_ALTERNATIVE_MARISA_CARD_IMAGE, "true");
 		defaults.setProperty(USE_PACK_MASTER_STYLE_MARISA_CARDS, "true");
 		defaults.setProperty(ENABLE_WITCHS_TEA_PARTY_FEATURE, "true");
 		defaults.setProperty(ENABLE_SHANGHAI_DOLL_EVENT_FOR_OTHER_CHARACTERS, "true");
+		defaults.setProperty(ENABLE_MEDICINE_FOR_OTHER_CHARACTERS, "false");
 		defaults.setProperty(ENABLE_DEBUGGING, "false");
 //			defaults.setProperty(SKIN_SELECTION_UNLOCKED, "false");
 		defaults.setProperty(SKIN_CHOSEN, "ORIGINAL");
@@ -70,6 +74,14 @@ public class AliceConfigHelper {
 	
 	public static void setShouldOpenTutorial(boolean shouldOpenTutorial) {
 		conf.setBool(SHOULD_OPEN_TUTORIAL, shouldOpenTutorial);
+	}
+	
+	public static boolean shouldOpenMedicineTutorial() {
+		return conf.getBool(SHOULD_OPEN_MEDICINE_TUTORIAL);
+	}
+	
+	public static void setShouldOpenMedicineTutorial(boolean shouldOpenMedicineTutorial) {
+		conf.setBool(SHOULD_OPEN_MEDICINE_TUTORIAL, shouldOpenMedicineTutorial);
 	}
 	
 	public static boolean enableSpellCardSignDisplay() {
@@ -138,6 +150,14 @@ public class AliceConfigHelper {
 
 	public static void setEnableShanghaiDollEventForOtherCharacters(boolean enableShanghaiDollEventForOtherCharacters) {
 		conf.setBool(ENABLE_SHANGHAI_DOLL_EVENT_FOR_OTHER_CHARACTERS, enableShanghaiDollEventForOtherCharacters);
+	}
+	
+	public static boolean enableMedicineForOtherCharacters() {
+		return conf.getBool(ENABLE_MEDICINE_FOR_OTHER_CHARACTERS);
+	}
+	
+	public static void setEnableMedicineForOtherCharacters(boolean enableMedicineForOtherCharacters) {
+		conf.setBool(ENABLE_MEDICINE_FOR_OTHER_CHARACTERS, enableMedicineForOtherCharacters);
 	}
 	
 	public static boolean enableDebugging() {
@@ -244,6 +264,7 @@ public class AliceConfigHelper {
 				(modLabel) -> {},
 				(button) -> {
 					setShouldOpenTutorial(button.enabled);
+					setShouldOpenMedicineTutorial(button.enabled);
 					save();
 				}
 		);
@@ -357,6 +378,24 @@ public class AliceConfigHelper {
 
 		y -= 50.0F;
 		
+		ModLabeledToggleButton enableMedicineForOtherCharactersButton = new ModLabeledToggleButton(
+				strings.get(ENABLE_MEDICINE_FOR_OTHER_CHARACTERS)[0],
+				strings.get(ENABLE_MEDICINE_FOR_OTHER_CHARACTERS)[1],
+				350.0F,
+				y,
+				Settings.CREAM_COLOR,
+				FontHelper.charDescFont,
+				enableMedicineForOtherCharacters(),
+				panel,
+				(modLabel) -> {},
+				(button) -> {
+					setEnableMedicineForOtherCharacters(button.enabled);
+					save();
+				}
+		);
+		
+		y -= 50.0F;
+		
 		ModLabeledToggleButton enableDebuggingButton = new ModLabeledToggleButton(
 				strings.get(ENABLE_DEBUGGING)[0],
 				350.0F,
@@ -379,6 +418,7 @@ public class AliceConfigHelper {
 		panel.addUIElement(usePackMasterStyleMarisaCardsButton);
 //		panel.addUIElement(enableWitchsTeaPartyFeatureButton);
 		panel.addUIElement(enableShanghaiDollEventForOtherCharactersButton);
+		panel.addUIElement(enableMedicineForOtherCharactersButton);
 		panel.addUIElement(enableDebuggingButton);
 		
 		if (enableDebugging()) {

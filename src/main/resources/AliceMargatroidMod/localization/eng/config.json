@@ -32,6 +32,11 @@
     "Allow characters other than Alice to encounter Shanghai Doll and trigger related events."
   ],
 
+  "enableMedicineForOtherCharacters": [
+    "Enable Medicine event for other characters",
+    "Allow characters other than Alice to encounter the Medicine event. NL Please note that this event has a significant impact on balance."
+  ],
+
   "enableDebugging": [
     "Enable Debugging (requires restart)"
   ],

@@ -430,9 +430,9 @@ public class PuppeteersHouse extends PhasedEvent {
 	}
 
 	public static class AliceCardReward extends CustomReward {
-		public static Texture ICON = new Texture(AliceHelper.getImgFilePath("UI", "AliceCardReward"));
+		public static final Texture ICON = new Texture(AliceHelper.getImgFilePath("UI", "AliceCardReward"));
 
-		ArrayList<AbstractCard> aliceCards;
+		private ArrayList<AbstractCard> aliceCards;
 
 		public AliceCardReward(ArrayList<AbstractCard> cards) {
 			super(

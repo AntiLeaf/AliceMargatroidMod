@@ -461,6 +461,11 @@
     "UPGRADE_DESCRIPTION": "Innate. NL alicemargatroid:Place alicemargatroid:Su-san_(Replica). NL Exhaust."
   },
 
+  "AliceMargatroid:CreateSusan": {
+    "NAME": "Su-san",
+    "DESCRIPTION": "alicemargatroid:Place alicemargatroid:Su-san. NL Exhaust."
+  },
+
   "AliceMargatroid:CreateDoll": {
     "NAME": "Clawing",
     "DESCRIPTION": "alicemargatroid:Place a %s.",
@@ -509,5 +514,45 @@
   "AliceMargatroid:AliceOortCloud": {
     "NAME": "Oort Cloud",
     "DESCRIPTION": "Gain !M! *Plated *Armor. NL alicemargatroid:Amplify [E] : Gain !aliceM2! more *Plated *Armor."
+  },
+
+
+  "AliceMargatroid:MedicineCripplingPoison": {
+    "NAME": "Crippling Cloud",
+    "DESCRIPTION": "Apply !M! Poison and 2 Weak to ALL enemies. NL Exhaust.",
+    "UPGRADE_DESCRIPTION": "Apply !M! Poison, 2 Weak and 2 Vulnerable to ALL enemies. NL Exhaust."
+  },
+
+  "AliceMargatroid:MedicineEnvenom": {
+    "NAME": "Envenom",
+    "DESCRIPTION": "Whenever an Attack deals unblocked damage, apply 1 Poison.",
+    "UPGRADE_DESCRIPTION": "Whenever an Attack deals unblocked damage, apply 2 Poison."
+  },
+
+  "AliceMargatroid:MedicineInfiniteBlades": {
+    "NAME": "Infinite Blades",
+    "DESCRIPTION": "Play an extra *Shiv each turn.",
+    "UPGRADE_DESCRIPTION": "Innate. NL Play 1 extra *Shiv each turn."
+  },
+
+  "AliceMargatroid:MedicineNoxiousFumes": {
+    "NAME": "Noxious Fumes",
+    "DESCRIPTION": "At the end of your turn, apply !M! Poison to ALL enemies."
+  },
+
+  "AliceMargatroid:MedicineBouncingFlask": {
+    "NAME": "Bouncing Flask",
+    "DESCRIPTION": "Randomly apply 3 Poison to !M! different enemies."
+  },
+
+  "AliceMargatroid:MedicineCorpseExplosion": {
+    "NAME": "Corpse Explosion",
+    "DESCRIPTION": "Apply !M! Poison. NL If the target is a alicemargatroid:Doll, when it dies, deal damage equal to its max HP to Alice."
+  },
+
+  "AliceMargatroid:MedicineDelirium": {
+    "NAME": "Delirium",
+    "DESCRIPTION": "Gain [G] at the start of your turn. NL Remove all Artifacts from the enemy. NL Poison damage dealt to enemies cannot be Blocked anymore.",
+    "UPGRADE_DESCRIPTION": "Gain [G] [G] at the start of your turn. NL Remove all Artifacts from the enemy. NL Poison damage dealt to enemies cannot be Blocked anymore."
   }
 }

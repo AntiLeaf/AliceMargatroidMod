@@ -15,6 +15,8 @@ public class MedicinePoisonPower extends AbstractAlicePower implements HealthBar
 	public static final String POWER_ID = AliceHelper.makeID(SIMPLE_NAME);
 	private static final PowerStrings powerStrings = CardCrawlGame.languagePack.getPowerStrings(POWER_ID);
 	
+	public static final Color POISON_COLOR = Color.valueOf("78c13c");
+	
 	private AbstractCreature source;
 	
 	public MedicinePoisonPower(AbstractCreature owner, AbstractCreature source, int amount) {
@@ -61,6 +63,6 @@ public class MedicinePoisonPower extends AbstractAlicePower implements HealthBar
 	
 	@Override
 	public Color getColor() {
-		return Color.valueOf("78c13c");
+		return POISON_COLOR.cpy();
 	}
 }

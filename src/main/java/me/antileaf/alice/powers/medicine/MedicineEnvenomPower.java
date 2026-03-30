@@ -1,13 +1,11 @@
 package me.antileaf.alice.powers.medicine;
 
-import com.megacrit.cardcrawl.actions.common.GainBlockAction;
+import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
+import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.core.AbstractCreature;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.PowerStrings;
 import me.antileaf.alice.action.medicine.MedicineApplyPoisonAction;
-import me.antileaf.alice.doll.AbstractDoll;
-import me.antileaf.alice.doll.DollManager;
 import me.antileaf.alice.powers.AbstractAlicePower;
 import me.antileaf.alice.utils.AliceHelper;
 
@@ -30,6 +28,15 @@ public class MedicineEnvenomPower extends AbstractAlicePower {
 	@Override
 	public void updateDescription() {
 		this.description = String.format(powerStrings.DESCRIPTIONS[0], this.amount);
+	}
+	
+	@Override
+	public void onInflictDamage(DamageInfo info, int damageAmount, AbstractCreature target) {
+		if (damageAmount > 0 && info.type == DamageInfo.DamageType.NORMAL) {
+			this.flash();
+			this.addToTop(new ApplyPowerAction(target, this.owner,
+					new MedicinePoisonPower(target, this.owner, this.amount), this.amount, true));
+		}
 	}
 	
 	public void envenom(int index) {

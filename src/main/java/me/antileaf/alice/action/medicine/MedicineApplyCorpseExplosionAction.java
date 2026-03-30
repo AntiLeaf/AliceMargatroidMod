@@ -1,14 +1,12 @@
 package me.antileaf.alice.action.medicine;
 
 import com.megacrit.cardcrawl.actions.AbstractGameAction;
-import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.core.AbstractCreature;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import me.antileaf.alice.action.doll.DollApplyCorpseExplosionAction;
 import me.antileaf.alice.doll.AbstractDoll;
 import me.antileaf.alice.doll.DollManager;
 import me.antileaf.alice.doll.dolls.EmptyDollSlot;
-import me.antileaf.alice.powers.medicine.MedicineCorpseExplosionPower;
 
 public class MedicineApplyCorpseExplosionAction extends AbstractGameAction {
 	private final int targetIndex;
@@ -28,10 +26,10 @@ public class MedicineApplyCorpseExplosionAction extends AbstractGameAction {
 			if (doll != null && !(doll instanceof EmptyDollSlot)) {
 				this.addToTop(new DollApplyCorpseExplosionAction(doll, this.amount));
 			}
-			else {
-				this.addToTop(new ApplyPowerAction(this.target, this.source,
-						new MedicineCorpseExplosionPower(this.target, this.amount)));
-			}
+//			else {
+//				this.addToTop(new ApplyPowerAction(this.target, this.source,
+//						new MedicineCorpseExplosionPower(this.target, this.amount)));
+//			}
 			
 			this.isDone = true;
 		}

@@ -46,8 +46,10 @@ public abstract class AbstractDoll extends CustomOrb {
 	private static final Logger logger = LogManager.getLogger(AbstractDoll.class.getName());
 
 	public static final String[] CREATURE_TEXT = CardCrawlGame.languagePack.getUIString("AbstractCreature").TEXT;
-	public static final PowerStrings POISON_STRINGS = CardCrawlGame.languagePack.getPowerStrings("Poison");
-	public static final PowerStrings CORPSE_EXPLOSION_STRINGS = CardCrawlGame.languagePack.getPowerStrings("CorpseExplosionPower");
+	public static final PowerStrings POISON_STRINGS = CardCrawlGame.languagePack.getPowerStrings(
+			AliceHelper.makeID("MedicinePoisonPower"));
+	public static final PowerStrings CORPSE_EXPLOSION_STRINGS = CardCrawlGame.languagePack.getPowerStrings(
+			AliceHelper.makeID("MedicineCorpseExplosionPowerForDolls"));
 	
 	private static final float BLOCK_ANIM_TIME = 0.7F;
 	private static final float HB_Y_OFFSET_DIST = 6.0F * Settings.scale;
@@ -90,6 +92,7 @@ public abstract class AbstractDoll extends CustomOrb {
 	protected int damageCount = 0;
 	protected int overflowedDamage = 0;
 	protected int poisonAboutToTake = 0;
+	protected int overflowedPoison = 0;
 	private float vfxTimer = 1.0F;
 	protected float animX, animY;
 	protected float animSpeed;
@@ -246,7 +249,20 @@ public abstract class AbstractDoll extends CustomOrb {
 			tips.add(new PowerTip(this.name, this.description, this.tipImg));
 
 			if (this.poison > 0) {
-				// TODO
+				tips.add(new PowerTip(
+						POISON_STRINGS.NAME,
+						String.format(POISON_STRINGS.DESCRIPTIONS[0], this.poison),
+						AbstractPower.atlas.findRegion("48/poison")
+				));
+			}
+			
+			if (this.corpseExplosion > 0) {
+				tips.add(new PowerTip(
+						CORPSE_EXPLOSION_STRINGS.NAME,
+						this.corpseExplosion == 1 ? CORPSE_EXPLOSION_STRINGS.DESCRIPTIONS[0] :
+								String.format(CORPSE_EXPLOSION_STRINGS.DESCRIPTIONS[1], this.corpseExplosion),
+						AbstractPower.atlas.findRegion("48/cExplosion")
+				));
 			}
 			
 			TipHelper.queuePowerTips(
@@ -392,11 +408,14 @@ public abstract class AbstractDoll extends CustomOrb {
 		}
 	}
 	
-	public void addPoisonAboutToTake(int poison) {
+	public void addPoisonAboutToTake(int poison, boolean broken) {
 		if (poison <= 0)
 			return;
-
+		
 		this.poisonAboutToTake += poison;
+		
+		if (broken)
+			this.overflowedPoison += poison;
 	}
 	
 	public int calcTotalDamageAboutToTake() {
@@ -589,7 +608,7 @@ public abstract class AbstractDoll extends CustomOrb {
 	}
 	
 	public void corpseExplosionFlash() {
-		AbstractPower fakeCorpseExplosionPower = new CorpseExplosionPower(null);
+		AbstractPower fakeCorpseExplosionPower = new CorpseExplosionPower(AbstractDungeon.player);
 		this.effects.add(new GainPowerEffect(fakeCorpseExplosionPower));
 		AbstractDungeon.effectList.add(new FlashPowerEffect(fakeCorpseExplosionPower));
 	}
@@ -922,28 +941,90 @@ public abstract class AbstractDoll extends CustomOrb {
 		}
 		
 		if (AbstractDungeon.player != null && !AbstractDungeon.player.hasRelic(RunicDome.ID)) {
+			String msg = "", left = "", right = "";
+			if (this.damageAboutToTake >= 0) {
+				left = this.damageAboutToTake + (this.damageCount > 1 ? "x" + this.damageCount : "");
+				msg += left;
+			}
+			if (this.poisonAboutToTake > 0) {
+				if (!msg.isEmpty())
+					msg += " ";
+				right = Integer.toString(this.poisonAboutToTake);
+				msg += right;
+			}
+			
+			float msgWidth = FontHelper.getWidth(FontHelper.cardEnergyFont_L, msg, this.fontScale);
+			float leftWidth = msgWidth - FontHelper.getWidth(
+					FontHelper.cardEnergyFont_L, right, this.fontScale);
+			float rightWidth = msgWidth - FontHelper.getWidth(
+					FontHelper.cardEnergyFont_L, left, this.fontScale);
+			
 			if (this.damageAboutToTake >= 0) {
 				FontHelper.renderFontCentered(
 						sb,
 						FontHelper.cardEnergyFont_L,
-						this.damageAboutToTake + (this.damageCount > 1 ? "x" + this.damageCount : ""),
-						this.cX,
+						left,
+						this.cX - rightWidth / 2.0F,
 						this.cY + this.bobEffect.y / 2.0F + NUM_Y_OFFSET + 50.0F * Settings.scale,
 						Color.RED,
 						this.fontScale
 				);
 			}
+			
+			if (this.poisonAboutToTake > 0) {
+				FontHelper.renderFontCentered(
+						sb,
+						FontHelper.cardEnergyFont_L,
+						right,
+						this.cX + leftWidth / 2.0F,
+						this.cY + this.bobEffect.y / 2.0F + NUM_Y_OFFSET + 50.0F * Settings.scale,
+						Color.GREEN,
+						this.fontScale
+				);
+			}
+			
+			msg = "";
+			left = "";
+			right = "";
+			
+			if (this.overflowedDamage > 0) {
+				left = "(" + this.overflowedDamage + ")";
+				msg += left;
+			}
+			if (this.overflowedPoison > 0) {
+				right = "(" + this.overflowedPoison + ")";
+				msg += right;
+			}
+			
+			msgWidth = FontHelper.getWidth(FontHelper.cardEnergyFont_L, msg, this.fontScale);
+			leftWidth = FontHelper.getWidth(FontHelper.cardEnergyFont_L, left, this.fontScale);
+			rightWidth = FontHelper.getWidth(FontHelper.cardEnergyFont_L, right, this.fontScale);
+			
 			if (this.overflowedDamage > 0) {
 				FontHelper.renderFontCentered(
 						sb,
 						FontHelper.cardEnergyFont_L,
-						"(" + this.overflowedDamage + ")",
-						(this.cX + AbstractDungeon.player.drawX) / 2.0F,
+						left,
+						(this.cX + AbstractDungeon.player.drawX) / 2.0F - rightWidth / 2.0F,
 						MathUtils.lerp(this.cY + this.bobEffect.y / 2.0F +
 								NUM_Y_OFFSET + 50.0F * Settings.scale,
 								AbstractDungeon.player.drawY + AbstractDungeon.player.hb.height / 2.0F,
 								0.6F),
 						Color.RED,
+						this.fontScale
+				);
+			}
+			if (this.overflowedPoison > 0) {
+				FontHelper.renderFontCentered(
+						sb,
+						FontHelper.cardEnergyFont_L,
+						right,
+						(this.cX + AbstractDungeon.player.drawX) / 2.0F + leftWidth / 2.0F,
+						MathUtils.lerp(this.cY + this.bobEffect.y / 2.0F +
+								NUM_Y_OFFSET + 50.0F * Settings.scale,
+								AbstractDungeon.player.drawY + AbstractDungeon.player.hb.height / 2.0F,
+								0.6F),
+						Color.GREEN,
 						this.fontScale
 				);
 			}

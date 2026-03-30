@@ -36,8 +36,8 @@ import me.antileaf.alice.characters.AliceMargatroid;
 import me.antileaf.alice.doll.AbstractDoll;
 import me.antileaf.alice.doll.DollManager;
 import me.antileaf.alice.doll.dolls.EmptyDollSlot;
-import me.antileaf.alice.events.LilyOfTheValleyFlowerField;
 import me.antileaf.alice.events.PuppeteersHouse;
+import me.antileaf.alice.events.medicine.LittleSweetPoison;
 import me.antileaf.alice.icon.AliceCustomIcon;
 import me.antileaf.alice.monsters.medicine.MedicineDamageInfo;
 import me.antileaf.alice.monsters.medicine.MedicineMelancholy;
@@ -46,6 +46,7 @@ import me.antileaf.alice.patches.enums.AbstractCardEnum;
 import me.antileaf.alice.patches.enums.AbstractPlayerEnum;
 import me.antileaf.alice.patches.enums.CardTargetEnum;
 import me.antileaf.alice.patches.enums.LibraryTypeEnum;
+import me.antileaf.alice.patches.misc.compatibility.ExploderCompatibilityPatch;
 import me.antileaf.alice.potions.ConcentrationPotion;
 import me.antileaf.alice.potions.WeavingPotion;
 import me.antileaf.alice.powers.medicine.MedicineEnvenomPower;
@@ -92,7 +93,7 @@ public class AliceMargatroidMod implements
 		CustomSavable<AliceSaveData> {
 	public static final String SIMPLE_NAME = AliceMargatroidMod.class.getSimpleName();
 	
-public static final Logger logger = LogManager.getLogger(AliceMargatroidMod.class.getName());
+	public static final Logger logger = LogManager.getLogger(AliceMargatroidMod.class.getName());
 	
 //	private static final String MOD_BADGE = "img/UI/badge.png";
 	
@@ -286,6 +287,11 @@ public static final Logger logger = LogManager.getLogger(AliceMargatroidMod.clas
 					.cards();
 		}
 		
+//		new AutoAdd("AliceMargatroidMod")
+//				.packageFilter("me.antileaf.alice.cards.medicine")
+//				.setDefaultSeen(true)
+//				.cards();
+		
 //		logger.info("done editing cards");
 	}
 
@@ -410,11 +416,18 @@ public static final Logger logger = LogManager.getLogger(AliceMargatroidMod.clas
 	public void receiveOnBattleStart(AbstractRoom room) {
 		DollManager.get().initPreBattle();
 		Bookmark.onBattleStart();
-		if (AbstractDungeon.player instanceof AliceMargatroid &&
-				AliceConfigHelper.shouldOpenTutorial()) {
-			AliceTutorialHelper.openTutorial();
-			AliceConfigHelper.setShouldOpenTutorial(false);
-			AliceConfigHelper.save();
+		if (AbstractDungeon.player instanceof AliceMargatroid) {
+			if (AliceConfigHelper.shouldOpenTutorial()) {
+				AliceTutorialHelper.openTutorial();
+				AliceConfigHelper.setShouldOpenTutorial(false);
+				AliceConfigHelper.save();
+			}
+			else if (room.event instanceof LittleSweetPoison &&
+					AliceConfigHelper.shouldOpenMedicineTutorial()) {
+				AliceTutorialHelper.openMedicineTutorial();
+				AliceConfigHelper.setShouldOpenMedicineTutorial(false);
+				AliceConfigHelper.save();
+			}
 		}
 	}
 	
@@ -490,17 +503,27 @@ public static final Logger logger = LogManager.getLogger(AliceMargatroidMod.clas
 		
 		AliceImageMaster.loadImages();
 		
-		BaseMod.addEvent(
-				new AddEventParams.Builder(LilyOfTheValleyFlowerField.ID, LilyOfTheValleyFlowerField.class)
-						.playerClass(AbstractPlayerEnum.ALICE_MARGATROID_PLAYER_CLASS)
-						.eventType(EventUtils.EventType.NORMAL)
-						.create()
-		);
+//		BaseMod.addEvent(
+//				new AddEventParams.Builder(LilyOfTheValleyFlowerField.ID, LilyOfTheValleyFlowerField.class)
+//						.playerClass(AbstractPlayerEnum.ALICE_MARGATROID_PLAYER_CLASS)
+//						.bonusCondition(() -> false)
+//						.eventType(EventUtils.EventType.ONE_TIME)
+//						.create()
+//		);
 
 		BaseMod.addEvent(
 				new AddEventParams.Builder(PuppeteersHouse.ID, PuppeteersHouse.class)
 						.dungeonID(TheCity.ID)
 						.bonusCondition(() -> AbstractDungeon.player.hasRelic(ShanghaiDollRelic.ID))
+						.eventType(EventUtils.EventType.NORMAL)
+						.create()
+		);
+		
+		BaseMod.addEvent(
+				new AddEventParams.Builder(LittleSweetPoison.ID, LittleSweetPoison.class)
+//						.playerClass(AbstractPlayerEnum.ALICE_MARGATROID_PLAYER_CLASS)
+						.bonusCondition(() -> AbstractDungeon.player instanceof AliceMargatroid ||
+								AliceConfigHelper.enableMedicineForOtherCharacters())
 						.eventType(EventUtils.EventType.NORMAL)
 						.create()
 		);
@@ -577,7 +600,8 @@ public static final Logger logger = LogManager.getLogger(AliceMargatroidMod.clas
 		if (!AliceHelper.isInBattle())
 			return amount;
 		
-		if (damageInfo.type == DamageInfo.DamageType.NORMAL) {
+		if (damageInfo.type == DamageInfo.DamageType.NORMAL ||
+				ExploderCompatibilityPatch.explosions.containsKey(damageInfo)) {
 			if (!(damageInfo.owner instanceof AbstractMonster))
 				return amount;
 			
@@ -600,7 +624,7 @@ public static final Logger logger = LogManager.getLogger(AliceMargatroidMod.clas
 			boolean lostHP = DollManager.get().dollTakesDamage(doll,
 					amount - remaining, false);
 			
-			if (lostHP) {
+			if (lostHP && doll.HP > 0) {
 				if (damageInfo.owner.hasPower(MedicineEnvenomPower.POWER_ID)) {
 					MedicineEnvenomPower power = (MedicineEnvenomPower) damageInfo.owner
 							.getPower(MedicineEnvenomPower.POWER_ID);
