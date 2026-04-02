@@ -46,6 +46,7 @@ import me.antileaf.alice.patches.enums.AbstractCardEnum;
 import me.antileaf.alice.patches.enums.AbstractPlayerEnum;
 import me.antileaf.alice.patches.enums.CardTargetEnum;
 import me.antileaf.alice.patches.enums.LibraryTypeEnum;
+import me.antileaf.alice.patches.events.MedicineLastSaveFilePatch;
 import me.antileaf.alice.patches.misc.compatibility.ExploderCompatibilityPatch;
 import me.antileaf.alice.potions.ConcentrationPotion;
 import me.antileaf.alice.potions.WeavingPotion;
@@ -457,6 +458,7 @@ public class AliceMargatroidMod implements
 	public void receivePostDungeonInitialize() {
 		logger.info("receive post dungeon initialize. Clearing save data.");
 		saveData = new AliceSaveData();
+		MedicineLastSaveFilePatch.lastSaveFile = null;
 	}
 
 	@Override
@@ -593,8 +595,6 @@ public class AliceMargatroidMod implements
 	public void receivePostPlayerUpdate() {
 		DollManager.get().update();
 	}
-	
-//	HashSet<AbstractMonster> monstersDestroyedFranceDoll = new HashSet<>();
 	
 	public int receiveOnPlayerDamaged(int amount, DamageInfo damageInfo) {
 		if (!AliceHelper.isInBattle())

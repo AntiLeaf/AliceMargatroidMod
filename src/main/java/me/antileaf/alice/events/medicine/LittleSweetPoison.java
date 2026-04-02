@@ -25,6 +25,7 @@ import com.megacrit.cardcrawl.relics.BottledTornado;
 import com.megacrit.cardcrawl.rewards.RewardItem;
 import com.megacrit.cardcrawl.saveAndContinue.SaveFile;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
+import me.antileaf.alice.patches.events.MedicineLastSaveFilePatch;
 import me.antileaf.alice.utils.AliceHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -124,7 +125,14 @@ public class LittleSweetPoison extends PhasedEvent {
 //			return;
 //		}
 		
-		SaveFile saveFile = CardCrawlGame.saveFile;
+		SaveFile saveFile = MedicineLastSaveFilePatch.lastSaveFile;
+		
+		if (saveFile == null) {
+			logger.warn("Can't restore medicine last save file");
+			if (AbstractDungeon.player.currentHealth <= 0)
+				AbstractDungeon.player.currentHealth = 1;
+			return;
+		}
 		
 		AbstractPlayer p = AbstractDungeon.player;
 		p.currentHealth = saveFile.current_health;
@@ -155,13 +163,12 @@ public class LittleSweetPoison extends PhasedEvent {
 			AbstractRelic r = RelicLibrary.getRelic(s).makeCopy();
 			r.instantObtain(p, index, false);
 			if (index < saveFile.relic_counters.size()) {
-				r.setCounter((Integer)saveFile.relic_counters.get(index));
+				r.setCounter(saveFile.relic_counters.get(index));
 			}
 			
 			r.updateDescription(p.chosenClass);
 			++index;
 		}
-		
 		
 		index = 0;
 		for(String s : saveFile.potions) {
@@ -227,7 +234,12 @@ public class LittleSweetPoison extends PhasedEvent {
 			}
 		}
 		
+		SaveFile backup = CardCrawlGame.saveFile;
+		CardCrawlGame.saveFile = saveFile;
+		
 		LoadPlayerSaves.Postfix(null, p);
+		
+		CardCrawlGame.saveFile = backup;
 	}
 	
 	private void openRewardScreen() {

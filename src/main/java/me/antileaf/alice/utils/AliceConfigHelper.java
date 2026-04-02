@@ -264,7 +264,8 @@ public class AliceConfigHelper {
 				(modLabel) -> {},
 				(button) -> {
 					setShouldOpenTutorial(button.enabled);
-					setShouldOpenMedicineTutorial(button.enabled);
+					if (button.enabled)
+						setShouldOpenMedicineTutorial(true);
 					save();
 				}
 		);
