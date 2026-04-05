@@ -83,6 +83,8 @@ public class MedicineMelancholy extends AbstractMonster {
 		else
 			this.base_max_hp = 80 + 20 * (this.lives - 1);
 		
+		this.maxHealth = this.currentHealth =  this.base_max_hp;
+		
 		this.cardList = new MedicineCardList(this.hb.cX, this.hb.cY);
 	}
 	
