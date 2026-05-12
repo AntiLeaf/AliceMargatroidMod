@@ -1482,6 +1482,9 @@ public abstract class AbstractDoll extends CustomOrb {
 		else if (clazz.equals(SusanReplica.ID)) {
 			return new SusanReplica();
 		}
+		else if (clazz.equals(Su_san.ID)) {
+			return new Su_san();
+		}
 		else {
 			logger.warn("newInst: Unknown class: {}", clazz);
 			return null;
@@ -1575,7 +1578,7 @@ public abstract class AbstractDoll extends CustomOrb {
 		descriptions.put(dollID, res);
 		return res;
 	}
-
+ 
 	public static class DollActModifier {
 		public boolean theSetup = false;
 		public boolean dollAmbush = false;
