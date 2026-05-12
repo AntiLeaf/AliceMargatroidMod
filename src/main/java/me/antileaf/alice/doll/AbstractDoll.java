@@ -1482,6 +1482,9 @@ public abstract class AbstractDoll extends CustomOrb {
 		else if (clazz.equals(SusanReplica.ID)) {
 			return new SusanReplica();
 		}
+		else if (clazz.equals(Su_san.ID)) {
+			return new Su_san();
+		}
 		else {
 			logger.warn("newInst: Unknown class: {}", clazz);
 			return null;
